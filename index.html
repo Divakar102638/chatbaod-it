@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEC IT Dept - V Semester Assistant</title>
+<style>
+  :root{
+    --bg:#0f1220;
+    --panel:#161a2e;
+    --panel2:#1d2340;
+    --accent:#c9973c;
+    --accent2:#6c8cff;
+    --text:#e7e9f5;
+    --muted:#9aa0c2;
+    --bot-bubble:#232a4d;
+    --user-bubble: linear-gradient(135deg,#c9973c,#e0b95c);
+    --border:#2a3060;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, Arial, sans-serif;
+    background:radial-gradient(circle at top left, #1a1f3a, #0f1220 60%);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+  }
+  .app{
+    width:100%;
+    max-width:1150px;
+    display:grid;
+    grid-template-columns:310px 1fr;
+    background:var(--panel);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    border:1px solid var(--border);
+    min-height:680px;
+  }
+  .sidebar{
+    background:var(--panel2);
+    padding:22px 18px;
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+  }
+  .logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .logo-icon{
+    width:42px;height:42px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),#8f6cff);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;text-align:center;line-height:1.1;
+  }
+  .logo-text h1{font-size:14.5px;margin:0;}
+  .logo-text span{font-size:10.5px;color:var(--muted);}
+  .badge{
+    font-size:10.5px;color:var(--muted);
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border);
+    padding:8px 10px;border-radius:10px;
+    margin:14px 0;line-height:1.5;
+  }
+  .badge b{color:var(--text);}
+  .kb-title{
+    font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--muted);margin:14px 0 8px;
+  }
+  .kb-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;}
+  .kb-list li{
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border);
+    padding:8px 10px;border-radius:10px;
+    font-size:12px;color:var(--muted);
+    display:flex;align-items:center;gap:8px;
+  }
+  .kb-list li .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:#4ade80;box-shadow:0 0 6px #4ade80;flex-shrink:0;
+  }
+  .suggest{display:flex;flex-direction:column;gap:8px;}
+  .suggest button{
+    text-align:left;
+    background:rgba(201,151,60,0.1);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:8px 10px;border-radius:10px;
+    font-size:12px;cursor:pointer;transition:.15s;
+  }
+  .suggest button:hover{background:rgba(201,151,60,0.22);border-color:var(--accent);}
+  .footer-note{
+    margin-top:auto;font-size:10px;color:var(--muted);
+    line-height:1.4;padding-top:14px;border-top:1px solid var(--border);
+  }
+  .chat{display:flex;flex-direction:column;background:var(--bg);}
+  .chat-header{
+    padding:15px 22px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;background:var(--panel);
+  }
+  .chat-header h2{margin:0;font-size:15px;}
+  .chat-header p{margin:2px 0 0;font-size:11.5px;color:var(--muted);}
+  .status{display:flex;align-items:center;gap:6px;font-size:11px;color:#4ade80;}
+  .status .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;}
+  .messages{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+  .msg{
+    max-width:82%;padding:12px 14px;border-radius:14px;
+    font-size:13.5px;line-height:1.6;white-space:pre-wrap;animation:pop .18s ease;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .msg.bot{background:var(--bot-bubble);align-self:flex-start;border-top-left-radius:4px;border:1px solid var(--border);}
+  .msg.user{background:var(--user-bubble);align-self:flex-end;border-top-right-radius:4px;color:#1a1200;}
+  .msg table{border-collapse:collapse;margin-top:8px;font-size:12px;width:100%;}
+  .msg th,.msg td{border:1px solid var(--border);padding:5px 7px;text-align:left;}
+  .msg th{background:rgba(255,255,255,0.06);}
+  .msg .src{
+    display:inline-block;margin-top:8px;font-size:10.5px;padding:3px 8px;border-radius:20px;
+    background:rgba(201,151,60,0.15);color:#f0d38a;border:1px solid rgba(201,151,60,0.35);
+  }
+  .typing{display:flex;gap:4px;align-items:center;padding:4px 0;}
+  .typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:blink 1.2s infinite ease-in-out;}
+  .typing span:nth-child(2){animation-delay:.2s;}
+  .typing span:nth-child(3){animation-delay:.4s;}
+  @keyframes blink{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
+  .input-bar{padding:14px 20px 18px;border-top:1px solid var(--border);background:var(--panel);display:flex;gap:10px;}
+  .input-bar input{
+    flex:1;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+    padding:12px 14px;border-radius:12px;font-size:13.5px;outline:none;
+  }
+  .input-bar input:focus{border-color:var(--accent);}
+  .input-bar button{
+    background:linear-gradient(135deg,var(--accent),#e0b95c);border:none;color:#1a1200;
+    padding:0 20px;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;transition:.15s;
+  }
+  .input-bar button:hover{filter:brightness(1.08);}
+  .input-bar button:active{transform:scale(.97);}
+
+  .live-clock{
+    font-size:12px;font-weight:700;color:var(--accent);
+    background:rgba(201,151,60,0.12);border:1px solid rgba(201,151,60,0.3);
+    padding:5px 10px;border-radius:10px;font-variant-numeric:tabular-nums;
+  }
+  .icon-toggle{
+    background:rgba(255,255,255,0.05);border:1px solid var(--border);
+    color:var(--text);width:32px;height:32px;border-radius:10px;cursor:pointer;
+    font-size:15px;display:flex;align-items:center;justify-content:center;transition:.15s;
+  }
+  .icon-toggle:hover{background:rgba(255,255,255,0.1);}
+  .icon-toggle.off{opacity:.4;}
+
+  .quick-row{
+    display:flex;gap:8px;padding:10px 20px 0;flex-wrap:wrap;
+  }
+  .quick-btn{
+    background:rgba(108,140,255,0.1);border:1px solid var(--border);color:var(--text);
+    padding:6px 12px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:.15s;
+  }
+  .quick-btn:hover{background:rgba(108,140,255,0.22);border-color:var(--accent2);}
+
+  .mic-btn{
+    background:var(--panel2);border:1px solid var(--border);color:var(--text);
+    width:44px;height:44px;border-radius:12px;font-size:17px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;
+  }
+  .mic-btn:hover{background:rgba(108,140,255,0.15);border-color:var(--accent2);}
+  .mic-btn.listening{
+    background:linear-gradient(135deg,#ef4444,#f97316);border-color:transparent;
+    animation:pulse 1s infinite;
+  }
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5);}50%{box-shadow:0 0 0 8px rgba(239,68,68,0);}}
+
+  .grid-table{border-collapse:collapse;width:100%;font-size:11px;margin-top:8px;}
+  .grid-table th, .grid-table td{border:1px solid var(--border);padding:5px 6px;text-align:center;}
+  .grid-table th{background:rgba(201,151,60,0.15);color:#f0d38a;font-size:10.5px;}
+  .grid-table td.lunch-row{background:rgba(255,255,255,0.04);font-style:italic;color:var(--muted);font-size:10px;}
+  .grid-table td.free-cell{color:var(--muted);}
+  .grid-table td.period-label{background:rgba(255,255,255,0.03);font-weight:600;color:var(--muted);white-space:nowrap;}
+  .grid-table td span.fac{display:block;font-size:9px;color:var(--muted);margin-top:1px;}
+  @media(max-width:780px){.app{grid-template-columns:1fr;}.sidebar{display:none;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">BEC<br>IT</div>
+      <div class="logo-text">
+        <h1>Bapatla Engineering College</h1>
+        <span>Dept. of Information Technology</span>
+      </div>
+    </div>
+    <div class="badge">
+      <b>HOD, IT:</b> Dr. N. Sivaram Prasad<br>
+      <b>Principal:</b> Dr. B. Srinivasa Rao<br>
+      <b>Class:</b> III B.Tech IT — V Semester<br>
+      <b>Sections:</b> A · B · C
+    </div>
+
+    <div class="kb-title">Loaded Knowledge Base</div>
+    <ul class="kb-list">
+      <li><span class="dot"></span>V Sem Timetable (A/B/C)</li>
+      <li><span class="dot"></span>Faculty & Subject Allotment</li>
+      <li><span class="dot"></span>Academic Calendar — II/III/IV B.Tech</li>
+      <li><span class="dot"></span>All Semesters (3rd - 8th)</li>
+      <li><span class="dot"></span>Exam Schedule & Holidays</li>
+      <li><span class="dot"></span>Section Coordinators</li>
+    </ul>
+
+    <div class="kb-title">Try asking</div>
+    <div class="suggest" id="suggestList">
+      <button>Friday B section 3rd period</button>
+      <button>Who teaches ML in section C?</button>
+      <button>Who is Krishnaiah?</button>
+      <button>Monday A section full timetable</button>
+      <button>When is the semester exam?</button>
+      <button>7th sem first term exam dates</button>
+      <button>4th sem academic calendar</button>
+      <button>Dasara holidays</button>
+      <button>3rd year internship break</button>
+      <button>Who is the HOD?</button>
+      <button>Room number for section A</button>
+    </div>
+
+    <div class="footer-note">
+      Trained on: (1) V-Semester Timetable (w.e.f 29-06-2026) for Sections A/B/C, and (2) the full Academic Calendar 2026-27 circular covering II, III & IV B.Tech, both semesters each.
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat">
+    <div class="chat-header">
+      <div>
+        <h2>IT Dept. V-Sem Knowledge Assistant</h2>
+        <p>Ask about periods, faculty, timetable & exam dates</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="liveClock" class="live-clock" title="This is your device's local time">--:--</div>
+        <button id="ttsToggle" class="icon-toggle" title="Toggle voice reply" onclick="toggleTTS()">🔊</button>
+        <button id="clearChatBtn" class="icon-toggle" title="Clear chat history" onclick="clearChat()">🗑️</button>
+        <div class="status"><span class="dot"></span> Online</div>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="msg bot">👋 Hi! I'm the IT Department Assistant, Bapatla Engineering College.
+
+I know:
+• Full V-Semester timetable (w.e.f 29-06-2026) for Sections A, B & C — every period, subject & faculty
+• Academic Calendar 2026-27 for ALL years — II, III & IV B.Tech, both semesters each (exam dates, assignment tests, holidays)
+
+Try: "Friday B section 3rd period", "7th sem first term exam dates", or "Dasara holidays"</div>
+    </div>
+
+    <div class="quick-row">
+      <button class="quick-btn" onclick="quickCurrentClass()">🕐 Current Period</button>
+      <button class="quick-btn" onclick="quickGrid('A')">📊 Grid A</button>
+      <button class="quick-btn" onclick="quickGrid('B')">📊 Grid B</button>
+      <button class="quick-btn" onclick="quickGrid('C')">📊 Grid C</button>
+    </div>
+    <div class="input-bar">
+      <button id="micBtn" class="mic-btn" onclick="toggleMic()" title="Speak your question">🎤</button>
+      <input type="text" id="userInput" placeholder="Adigi telusuko mawa..." />
+      <button onclick="handleSend()">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   KNOWLEDGE BASE — extracted from:
+   1) TIME_TABLE_V_SEM_ON_29-6-26.docx  (III B.Tech IT, V Sem, Sections A/B/C)
+   2) Academic Calendar 2026-27 (III B.Tech, I Semester = 5th Sem row only)
+========================================================= */
+
+const COLLEGE = {
+  name: "Bapatla Engineering College (Autonomous), Bapatla",
+  estd: 1981,
+  hod: "Dr. N. Sivaram Prasad",
+  principal: "Dr. B. Srinivasa Rao",
+  className: "III B.Tech, Information Technology (IT) — V Semester",
+  effectiveFrom: "29-06-2026"
+};
+
+// Standard daily period slots (same grid used across sections)
+const PERIOD_TIMES = [
+  "9:00 - 9:50",     // P1
+  "9:50 - 10:40",    // P2
+  "10:40 - 11:30",   // P3
+  "11:30 - 12:20",   // P4
+  "1:10 - 2:00",     // P5 (after Lunch 12:20-1:10)
+  "2:00 - 2:50",     // P6
+  "2:50 - 3:40",     // P7
+  "3:40 - 4:30"      // P8
+];
+const LUNCH_SLOT = "12:20 - 1:10 (Lunch Break)";
+
+const SECTION_META = {
+  A: { room: "RPLH-1", coordinator: "Mr. S. Ratna Babu" },
+  B: { room: "RPLH-2", coordinator: "Mrs. P. Surekha" },
+  C: { room: "RPLH-3", coordinator: "Mrs. T. Anusha" }
+};
+
+// Subject code / name master (codes are common; only faculty differs per section)
+const SUBJECTS = {
+  "ACD":       { code: "24IT501",       full: "ACD" },
+  "SE":        { code: "24IT502",       full: "SE (Software Engineering)" },
+  "ML":        { code: "24IT503",       full: "ML (Machine Learning)" },
+  "WN/DIP":    { code: "24IT504/PE01",  full: "WN / DIP (Professional Elective)" },
+  "PEAI":      { code: "24IT505/JO01",  full: "PEAI (Job-Oriented Elective)" },
+  "TPIPR":     { code: "24IT506/MC03",  full: "Technical Paper Writing and IPR" },
+  "SS Lab":    { code: "24ITL501/SO03", full: "SS Lab (Skill Oriented Lab)" },
+  "ML Lab":    { code: "24ITL502",      full: "ML Lab" },
+  "PEAI Lab":  { code: "24ITL503",      full: "PEAI Lab" },
+  "ML/PEAI Lab": { code: "24ITL502 / 24ITL503", full: "ML / PEAI Lab" },
+  "PEAI/ML Lab": { code: "24ITL503 / 24ITL502", full: "PEAI / ML Lab" },
+  "Mentoring": { code: "-", full: "Mentoring Session" },
+  "-":         { code: "-", full: "Free Period / No Class" }
+};
+
+// Faculty allotment per section
+const FACULTY = {
+  A: {
+    "ACD": "Mr. S. Ratna Babu",
+    "SE": "Miss. E. Divya Kanthi",
+    "ML": "Mrs. D. Karumamma",
+    "WN/DIP": "Dr. B. Krishnaiah / Dr. P. Sreedhar / Mr. S. Prabhudas",
+    "PEAI": "Mr. Y. Mastanaiah Naidu",
+    "TPIPR": "Dr. B. Krishnaiah",
+    "SS Lab": "Dr. N. Sudheer Kumar",
+    "ML Lab": "Mrs. D. Karumamma & Mr. K. Suresh Kumar",
+    "PEAI Lab": "Mr. Y. Mastanaiah Naidu & Dr. V. Hanuman Kumar",
+    "ML/PEAI Lab": "Mrs. D. Karumamma / Mr. Y. Mastanaiah Naidu / Dr. V. Hanuman Kumar",
+    "PEAI/ML Lab": "Mr. Y. Mastanaiah Naidu / Dr. V. Hanuman Kumar / Mrs. D. Karumamma",
+    "Mentoring": "Section Mentor(s)",
+    "-": "—"
+  },
+  B: {
+    "ACD": "Mr. K. Suresh Kumar",
+    "SE": "Miss. E. Divya Kanthi",
+    "ML": "Mrs. P. Surekha",
+    "WN/DIP": "Dr. B. Krishnaiah / Dr. P. Sreedhar / Mr. S. Prabhudas",
+    "PEAI": "Mrs. D. Karumamma",
+    "TPIPR": "Dr. B. Krishnaiah",
+    "SS Lab": "Mr. K. Tambi Babu",
+    "ML Lab": "Mrs. P. Surekha & Dr. V. Hanuman Kumar",
+    "PEAI Lab": "Mrs. D. Karumamma & Dr. B. Krishnaiah",
+    "ML/PEAI Lab": "Mrs. P. Surekha / Dr. V. Hanuman Kumar / Mrs. D. Karumamma",
+    "PEAI/ML Lab": "Mrs. D. Karumamma / Dr. B. Krishnaiah / Mrs. P. Surekha",
+    "Mentoring": "Section Mentor(s)",
+    "-": "—"
+  },
+  C: {
+    "ACD": "Mr. G. Prasad",
+    "SE": "Mrs. T. Anusha",
+    "ML": "Dr. N. Sivaram Prasad",
+    "WN/DIP": "Dr. B. Krishnaiah / Dr. P. Sreedhar / Mr. S. Prabhudas",
+    "PEAI": "Dr. V. Hanuman Kumar",
+    "TPIPR": "Dr. B. Krishnaiah",
+    "SS Lab": "Mr. K. Tambi Babu",
+    "ML Lab": "Mrs. P. Surekha & Dr. K. Srinivasarao",
+    "PEAI Lab": "Dr. V. Hanuman Kumar & Dr. B. Krishnaiah",
+    "ML/PEAI Lab": "Dr. K. Srinivasarao / Mrs. P. Surekha / Dr. V. Hanuman Kumar",
+    "PEAI/ML Lab": "Dr. V. Hanuman Kumar / Dr. B. Krishnaiah / Mrs. P. Surekha",
+    "Mentoring": "Section Mentor(s)",
+    "-": "—"
+  }
+};
+
+// Weekly timetable: [P1,P2,P3,P4, P5,P6,P7,P8] (Lunch fixed between P4 & P5)
+const TIMETABLE = {
+  A: {
+    Monday:    ["SS Lab","SS Lab","SS Lab","SS Lab","SE","WN/DIP","ML","-"],
+    Tuesday:   ["TPIPR","PEAI","SE","ML","WN/DIP","ACD","-","-"],
+    Wednesday: ["ML/PEAI Lab","ML/PEAI Lab","ML/PEAI Lab","ML/PEAI Lab","PEAI","ACD","Mentoring","-"],
+    Thursday:  ["SE","ACD","ML","PEAI","WN/DIP","-","-","-"],
+    Friday:    ["WN/DIP","SE","-","-","PEAI/ML Lab","PEAI/ML Lab","PEAI/ML Lab","PEAI/ML Lab"],
+    Saturday:  ["TPIPR","PEAI","ACD","ML","-","-","-","-"]
+  },
+  B: {
+    Monday:    ["PEAI","ACD","SE","-","ML","WN/DIP","Mentoring","-"],
+    Tuesday:   ["SE","ACD","PEAI","-","ML","WN/DIP","-","-"],
+    Wednesday: ["ACD","SE","-","ML/PEAI Lab","ML/PEAI Lab","-","-","-"],
+    Thursday:  ["ACD","TPIPR","SE","-","PEAI","WN/DIP","-","-"],
+    Friday:    ["WN/DIP","PEAI","TPIPR","-","ML","SS Lab","SS Lab","SS Lab"],
+    Saturday:  ["PEAI/ML Lab","PEAI/ML Lab","PEAI/ML Lab","ML","-","-","-","-"]
+  },
+  C: {
+    Monday:    ["ACD","TPIPR","PEAI","ML","WN/DIP","Mentoring","-","-"],
+    Tuesday:   ["PEAI/ML Lab","PEAI/ML Lab","PEAI/ML Lab","SE","WN/DIP","ML","-","-"],
+    Wednesday: ["SS Lab","SS Lab","SS Lab","ACD","TPIPR","PEAI","-","-"],
+    Thursday:  ["ML/PEAI Lab","ML/PEAI Lab","ML/PEAI Lab","ACD","WN/DIP","SE","-","-"],
+    Friday:    ["WN/DIP","SE","ACD","PEAI","ML","-","-","-"],
+    Saturday:  ["SE","PEAI","ML","-","-","-","-","-"]
+  }
+};
+
+// FULL Academic Calendar 2026-27 — II, III & IV B.Tech, both semesters
+// (extracted from the Academic Calendar circular image)
+const CALENDAR = {
+  "4-1": { // IV B.Tech, I Semester (7th)
+    label: "IV B.Tech — I Semester (7th)",
+    "Commencement of Class Work": "29.06.2026",
+    "CRT Classes": "06.07.2026 - 25.07.2026",
+    "First Assignment Test": "17.08.2026 - 25.08.2026",
+    "First Term Examinations": "12.09.2026 - 19.09.2026",
+    "Second Assignment Test": "08.10.2026 - 17.10.2026",
+    "Last Instruction Day": "14.11.2026",
+    "Second Term Examinations": "16.11.2026 - 21.11.2026",
+    "Preparation Holidays": "23.11.2026 - 30.11.2026",
+    "Semester End Examinations": "01.12.2026 - 19.12.2026"
+  },
+  "4-2": { // IV B.Tech, II Semester (8th)
+    label: "IV B.Tech — II Semester (8th)",
+    "Commencement of Class Work": "21.12.2026",
+    "Project Work Preliminary Assessment": "22.02.2027 - 27.02.2027",
+    "Project Work Final Assessment": "19.04.2027 - 24.04.2027"
+  },
+  "3-1": { // III B.Tech, I Semester (5th) = current IT V Semester
+    label: "III B.Tech — I Semester (5th)",
+    "Commencement of Class Work": "15.06.2026",
+    "First Assignment Test": "23.07.2026 - 01.08.2026",
+    "First Term Examinations": "17.08.2026 - 22.08.2026",
+    "Second Assignment Test": "17.09.2026 - 26.09.2026",
+    "Last Instruction Day": "10.10.2026",
+    "Second Term Examinations": "12.10.2026 - 17.10.2026",
+    "Preparation Holidays": "26.10.2026 - 02.11.2026",
+    "Semester End Examinations": "03.11.2026 - 21.11.2026"
+  },
+  "3-2": { // III B.Tech, II Semester (6th)
+    label: "III B.Tech — II Semester (6th)",
+    "Commencement of Class Work": "23.11.2026",
+    "First Assignment Test": "24.12.2026 - 02.01.2027",
+    "First Term Examinations": "19.01.2027 - 25.01.2027",
+    "Second Assignment Test": "25.02.2027 - 05.03.2027",
+    "Last Instruction Day": "20.03.2027",
+    "Second Term Examinations": "23.03.2027 - 30.03.2027",
+    "Preparation Holidays": "31.03.2027 - 06.04.2027",
+    "Semester End Examinations": "08.04.2027 - 30.04.2027"
+  },
+  "2-1": { // II B.Tech, I Semester (3rd)
+    label: "II B.Tech — I Semester (3rd)",
+    "Commencement of Class Work": "03.08.2026",
+    "First Assignment Test": "03.09.2026 - 12.09.2026",
+    "First Term Examinations": "21.09.2026 - 26.09.2026",
+    "Second Assignment Test": "05.11.2026 - 14.11.2026",
+    "Last Instruction Day": "28.11.2026",
+    "Second Term Examinations": "30.11.2026 - 05.12.2026",
+    "Preparation Holidays": "07.12.2026 - 14.12.2026",
+    "Semester End Examinations": "15.12.2026 - 02.01.2027"
+  },
+  "2-2": { // II B.Tech, II Semester (4th)
+    label: "II B.Tech — II Semester (4th)",
+    "Commencement of Class Work": "04.01.2027",
+    "First Assignment Test": "11.02.2027 - 20.02.2027",
+    "First Term Examinations": "01.03.2027 - 06.03.2027",
+    "Second Assignment Test": "16.04.2027 - 24.04.2027",
+    "Last Instruction Day": "01.05.2027",
+    "Second Term Examinations": "03.05.2027 - 08.05.2027",
+    "Preparation Holidays": "10.05.2027 - 17.05.2027",
+    "Semester End Examinations": "18.05.2027 - 01.06.2027"
+  }
+};
+
+// 5th Sem is III B.Tech I Semester — this is the IT dept's current class (V Semester)
+const CALENDAR_5TH_SEM = CALENDAR["3-1"];
+
+// Common holidays / events for the whole college (all years)
+const COMMON_EVENTS = {
+  "Dasara Holidays": "19.10.2026 - 24.10.2026",
+  "Pongal Holidays": "11.01.2027 - 16.01.2027",
+  "3rd Year Internship Break": "03.05.2027 - 12.06.2027 (6 weeks)",
+  "2nd Year Internship Break": "07.06.2027 - 03.07.2027 (4 weeks)",
+  "BECTAGON 2027 (College Fest)": "12.02.2027 & 13.02.2027",
+  "IV B.Tech 2027-28 Class Work Begins": "14.06.2027",
+  "III B.Tech 2027-28 Class Work Begins": "05.07.2027"
+};
+
+const YEAR_ALIASES = {
+  "4th": "4", "iv": "4", "fourth": "4", "4-1sem":"4","4-2sem":"4",
+  "3rd": "3", "iii": "3", "third": "3",
+  "2nd": "2", "ii": "2", "second": "2",
+  "5th sem": "3-1", "6th sem": "3-2", "7th sem": "4-1", "8th sem": "4-2",
+  "3rd sem": "2-1", "4th sem": "2-2"
+};
+
+const MONTHS = {jan:0,january:0,feb:1,february:1,mar:2,march:2,apr:3,april:3,may:4,jun:5,june:5,
+  jul:6,july:6,aug:7,august:7,sep:8,sept:8,september:8,oct:9,october:9,nov:10,november:10,dec:11,december:11};
+const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+// Resolves phrases like "31st july", "august 26", "26/08/2026", "1 august" to a JS Date.
+// Defaults year to 2026 (current academic year in the timetable) if not given.
+function detectDateToDay(q){
+  let m = q.match(/\b(\d{1,2})(st|nd|rd|th)?\s*[-\/]?\s*(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)\b(?:\s*[-\/,]?\s*(\d{4}))?/i);
+  let day, month, year;
+  if (m){
+    day = parseInt(m[1]); month = MONTHS[m[3].toLowerCase()]; year = m[4] ? parseInt(m[4]) : 2026;
+  } else {
+    m = q.match(/\b(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|sept|september|oct|october|nov|november|dec|december)\s*[-\/,]?\s*(\d{1,2})(st|nd|rd|th)?(?:\s*[-\/,]?\s*(\d{4}))?/i);
+    if (m){
+      month = MONTHS[m[1].toLowerCase()]; day = parseInt(m[2]); year = m[4] ? parseInt(m[4]) : 2026;
+    } else {
+      m = q.match(/\b(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\b/);
+      if (m){ day = parseInt(m[1]); month = parseInt(m[2]) - 1; year = parseInt(m[3]); }
+    }
+  }
+  if (day === undefined || month === undefined) return null;
+  const dateObj = new Date(year, month, day);
+  if (isNaN(dateObj.getTime())) return null;
+  const weekday = DAY_NAMES[dateObj.getDay()];
+  if (weekday === "Sunday") return { weekday: null, dateStr: dateObj.toDateString(), isSunday: true };
+  return { weekday, dateStr: dateObj.toDateString(), isSunday: false };
+}
+
+// Resolves "today" / "tomorrow" / "day after tomorrow" to the actual weekday,
+// based on the device's current date.
+function resolveRelativeDay(q){
+  const now = new Date();
+  if (/\bday after tomorrow'?s?\b/i.test(q)){
+    const t = new Date(now); t.setDate(now.getDate() + 2);
+    return { weekday: DAY_NAMES[t.getDay()], dateStr: t.toDateString(), isSunday: t.getDay() === 0 };
+  }
+  if (/\btomorrow'?s?\b/i.test(q)){
+    const t = new Date(now); t.setDate(now.getDate() + 1);
+    return { weekday: DAY_NAMES[t.getDay()], dateStr: t.toDateString(), isSunday: t.getDay() === 0 };
+  }
+  if (/\btoday'?s?\b/i.test(q)){
+    return { weekday: DAY_NAMES[now.getDay()], dateStr: now.toDateString(), isSunday: now.getDay() === 0 };
+  }
+  return null;
+}
+
+const DAY_ALIASES = {
+  mon: "Monday", monday: "Monday",
+  tue: "Tuesday", tues: "Tuesday", tuesday: "Tuesday",
+  wed: "Wednesday", wednesday: "Wednesday",
+  thu: "Thursday", thurs: "Thursday", thursday: "Thursday",
+  fri: "Friday", friday: "Friday",
+  sat: "Saturday", saturday: "Saturday"
+};
+
+const WORD_NUM = {one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,
+  "1st":1,"2nd":2,"3rd":3,"4th":4,"5th":5,"6th":6,"7th":7,"8th":8};
+
+/* =========================================================
+   PARSING HELPERS
+========================================================= */
+function normalize(str){ return str.toLowerCase().replace(/[^\w\s\/:]/g," ").replace(/\s+/g," ").trim(); }
+
+function detectDay(q){
+  for (const key in DAY_ALIASES){
+    const re = new RegExp("\\b"+key+"\\b","i");
+    if (re.test(q)) return DAY_ALIASES[key];
+  }
+  return null;
+}
+
+function detectSection(q){
+  if (/\ball\s*(three\s*)?sections?\b|\ball\s*sec\b|\babc\b|\ba\s*,?\s*b\s*,?\s*c\b|\ba\s*b\s*c\s*sec/i.test(q)) return "ALL";
+  let m = q.match(/\bsec(tion)?[\s-]*([abc])\b/i);
+  if (m) return m[2].toUpperCase();
+  m = q.match(/\b([abc])[\s-]*sec(tion)?\b/i);
+  if (m) return m[1].toUpperCase();
+  m = q.match(/\bsection[\s-]*([abc])\b/i);
+  if (m) return m[1].toUpperCase();
+  return null;
+}
+
+function detectPeriod(q){
+  if (/\blast\s*(period|class)\b|\bfinal\s*(period|class)\b/i.test(q)) return "LAST";
+  if (/\bfirst\s*(period|class)\b/i.test(q)) return 1;
+  let m = q.match(/period\s*(\d)/i);
+  if (m) return parseInt(m[1]);
+  m = q.match(/(\d)\s*(st|nd|rd|th)?\s*period/i);
+  if (m) return parseInt(m[1]);
+  for (const w in WORD_NUM){
+    const re = new RegExp("\\b"+w+"\\b","i");
+    if (re.test(q) && /period/i.test(q)) return WORD_NUM[w];
+  }
+  return null;
+}
+
+function detectSubjectKey(q){
+  const keys = Object.keys(SUBJECTS).sort((a,b)=>b.length-a.length);
+  for (const k of keys){
+    if (k === "-" ) continue;
+    // build a word-boundary-safe regex from the key (escape special chars, allow spaces/slashes)
+    const escaped = k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+    const re = new RegExp("\\b" + escaped + "\\b", "i");
+    if (re.test(q)) return k;
+  }
+  if (/machine learning/i.test(q)) return "ML";
+  if (/software eng(ineering)?\b/i.test(q)) return "SE";
+  if (/technical paper|\bipr\b/i.test(q)) return "TPIPR";
+  if (/soft skill/i.test(q)) return "SS Lab";
+  return null;
+}
+
+/* =========================================================
+   RESPONSE BUILDERS
+========================================================= */
+function periodTimeLabel(idx){ // idx 0-7
+  return idx < 4 ? PERIOD_TIMES[idx] : PERIOD_TIMES[idx];
+}
+
+// Finds the index of the last non-free (scheduled) period in a day's array.
+// Returns -1 if the whole day is free (shouldn't normally happen).
+function lastScheduledPeriodIdx(section, day){
+  const arr = TIMETABLE[section][day];
+  for (let i = arr.length - 1; i >= 0; i--){
+    if (arr[i] !== "-") return i;
+  }
+  return -1;
+}
+
+function answerSlot(section, day, periodNum){
+  let idx;
+  let resolvedPeriodNum = periodNum;
+  if (periodNum === "LAST"){
+    idx = lastScheduledPeriodIdx(section, day);
+    if (idx === -1) return `📅 ${day}, Section ${section} has no scheduled classes.`;
+    resolvedPeriodNum = idx + 1;
+  } else {
+    idx = periodNum - 1;
+  }
+  if (idx < 0 || idx > 7) return "Please give a period number between 1 and 8.";
+  const subjKey = TIMETABLE[section][day][idx];
+  const subj = SUBJECTS[subjKey] || { full: subjKey, code: "-" };
+  const faculty = FACULTY[section][subjKey] || "—";
+  const time = PERIOD_TIMES[idx];
+  const room = SECTION_META[section].room;
+  const coordinator = SECTION_META[section].coordinator;
+  const lastTag = periodNum === "LAST" ? " (Last Period)" : "";
+
+  if (subjKey === "-"){
+    return `📅 ${day}, Section ${section}, Period ${resolvedPeriodNum}${lastTag} (${time})\n\nNo class scheduled — Free Period.\nRoom: ${room}\nSection Coordinator: ${coordinator}`;
+  }
+  return `📅 ${day}, Section ${section}, Period ${resolvedPeriodNum}${lastTag} (${time})\n\nSubject: ${subj.full}\nSubject Code: ${subj.code}\nFaculty: ${faculty}\nRoom: ${room}\nSection Coordinator: ${coordinator}`;
+}
+
+// Same as answerSlot but for ALL three sections at once (A, B, C combined).
+function answerSlotAllSections(day, periodNum){
+  let out = `📅 ${day}${periodNum === "LAST" ? " — Last Period" : `, Period ${periodNum}`} — All Sections:\n`;
+  ["A","B","C"].forEach(sec => {
+    let idx = periodNum === "LAST" ? lastScheduledPeriodIdx(sec, day) : periodNum - 1;
+    if (idx < 0 && periodNum === "LAST"){
+      out += `\n— Section ${sec} —\nNo scheduled classes.\n`;
+      return;
+    }
+    if (idx < 0 || idx > 7){
+      out += `\n— Section ${sec} —\nInvalid period.\n`;
+      return;
+    }
+    const subjKey = TIMETABLE[sec][day][idx];
+    const subj = SUBJECTS[subjKey] || { full: subjKey, code: "-" };
+    const time = PERIOD_TIMES[idx];
+    const room = SECTION_META[sec].room;
+    out += `\n— Section ${sec} (Room ${room}, P${idx+1}, ${time}) —\n`;
+    if (subjKey === "-"){
+      out += `Free Period\n`;
+    } else {
+      out += `${subj.full} (${subj.code}) — ${FACULTY[sec][subjKey]}\n`;
+    }
+  });
+  return out;
+}
+
+// Parse a clock time from the query (e.g. "10:30am", "2 pm", "14:00", "11 pm") and
+// map it to the matching period index (0-7).
+// Returns: 0-7 = period index, -1 = Lunch Break, -2 = valid time but outside college hours, null = no time found in query.
+function detectTimeToPeriodIdx(q){
+  let m = q.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i);
+  if (!m) return null;
+  let hour = parseInt(m[1]);
+  const min = m[2] ? parseInt(m[2]) : 0;
+  const ampm = m[3] ? m[3].toLowerCase() : null;
+  if (hour > 23 || min > 59) return null; // not a real time
+
+  if (ampm === "pm" && hour < 12) hour += 12;
+  if (ampm === "am" && hour === 12) hour = 0;
+  // Heuristic: college hours are 9am-4:30pm, so bare hours 1-4 without am/pm
+  // almost always mean PM (afternoon periods), and 9-12 mean AM.
+  if (!ampm){
+    if (hour >= 1 && hour <= 4) hour += 12;
+  }
+
+  const totalMin = hour*60 + min;
+  if (totalMin >= LUNCH_BOUNDS[0] && totalMin < LUNCH_BOUNDS[1]) return -1; // lunch
+  for (let i=0;i<PERIOD_BOUNDS.length;i++){
+    if (totalMin >= PERIOD_BOUNDS[i][0] && totalMin < PERIOD_BOUNDS[i][1]) return i;
+  }
+  // Valid time, but outside 9:00 AM - 4:30 PM college hours
+  return -2;
+}
+
+function answerFullDay(section, day){
+  const arr = TIMETABLE[section][day];
+  let out = `📅 ${day} — Section ${section} (Room ${SECTION_META[section].room}) — full day schedule:\n`;
+  arr.forEach((subjKey, i)=>{
+    const subj = SUBJECTS[subjKey] || { full: subjKey };
+    const faculty = FACULTY[section][subjKey] || "—";
+    out += `\nP${i+1} (${PERIOD_TIMES[i]}): ${subj.full}${subjKey!=="-" ? " — " + faculty : ""}`;
+    if (i === 3) out += `\n[ ${LUNCH_SLOT} ]`;
+  });
+  return out;
+}
+
+function answerFacultyForSubject(subjKey, section){
+  const subj = SUBJECTS[subjKey] || { full: subjKey, code:"-" };
+  if (section){
+    return `👨‍🏫 ${subj.full} (${subj.code}) — Section ${section} is handled by ${FACULTY[section][subjKey]}.`;
+  }
+  let out = `👨‍🏫 Faculty for ${subj.full} (${subj.code}) across sections:\n`;
+  ["A","B","C"].forEach(s=>{
+    out += `\nSection ${s}: ${FACULTY[s][subjKey]}`;
+  });
+  return out;
+}
+
+/* =========================================================
+   REVERSE LOOKUP: Faculty name -> subjects + sections taught
+========================================================= */
+function getAllFacultyEntries(){
+  const entries = [];
+  for (const sec in FACULTY){
+    for (const subjKey in FACULTY[sec]){
+      if (subjKey === "-" || subjKey === "Mentoring") continue;
+      entries.push({ section: sec, subjectKey: subjKey, facultyRaw: FACULTY[sec][subjKey] });
+    }
+  }
+  return entries;
+}
+
+function splitFacultyNames(raw){
+  return raw.split(/\/|&/).map(s => s.trim()).filter(Boolean);
+}
+
+// Strips titles (Dr./Mr./Mrs./Miss./Ms.) and punctuation for loose name matching
+function normalizeName(s){
+  return s.toLowerCase()
+    .replace(/\b(dr|mr|mrs|miss|ms)\.?\b/g, "")
+    .replace(/[^\w\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Strips common question words, leaving just the probable name portion
+function extractNameQuery(q){
+  const stripped = q.replace(/\b(who|is|are|teaches|teach|teacher|faculty|sir|madam|maam|which|subject|subjects|section|sections|class|classes|handles|handling|does|do|about|tell|me|info|information|details|dept|department|prof|professor|name)\b/gi, " ")
+    .replace(/\s+/g, " ").trim();
+  return stripped.length >= 3 ? stripped : null;
+}
+
+function findFacultySchedule(nameQuery){
+  const qNorm = normalizeName(nameQuery);
+  if (!qNorm) return null;
+  const entries = getAllFacultyEntries();
+  const matches = [];
+  entries.forEach(e => {
+    const names = splitFacultyNames(e.facultyRaw);
+    names.forEach(n => {
+      const nNorm = normalizeName(n);
+      if (nNorm && nNorm.length >= 3 && (nNorm.includes(qNorm) || qNorm.includes(nNorm))){
+        matches.push({ ...e, matchedName: n });
+      }
+    });
+  });
+  return matches.length ? matches : null;
+}
+
+function formatFacultyMatches(matches){
+  const grouped = {};
+  matches.forEach(m => {
+    if (!grouped[m.matchedName]) grouped[m.matchedName] = [];
+    grouped[m.matchedName].push(m);
+  });
+  const names = Object.keys(grouped);
+  let out = "";
+  names.forEach((name, idx) => {
+    out += (idx > 0 ? "\n\n" : "") + `👨‍🏫 ${name} teaches:\n`;
+    grouped[name].forEach(m => {
+      const subj = SUBJECTS[m.subjectKey] || { full: m.subjectKey, code: "-" };
+      out += `\n• ${subj.full} (${subj.code}) — Section ${m.section} (Room ${SECTION_META[m.section].room})`;
+    });
+  });
+  if (names.length > 1){
+    out = `Found ${names.length} matching faculty:\n\n` + out;
+  }
+  return out;
+}
+
+// Detect which semester block the query refers to. Defaults to 5th Sem (3-1)
+// since that is the IT department's current running class, UNLESS another
+// year/semester is explicitly mentioned.
+function detectSemesterKey(q){
+  if (/\b(7th|seventh)\s*sem/i.test(q) || /4[\s-]*1|iv.*(1st|i)\s*sem|4th\s*year.*1st\s*sem/i.test(q)) return "4-1";
+  if (/\b(8th|eighth)\s*sem/i.test(q) || /4[\s-]*2|iv.*(2nd|ii)\s*sem|4th\s*year.*2nd\s*sem/i.test(q)) return "4-2";
+  if (/\b(6th|sixth)\s*sem/i.test(q) || /3[\s-]*2|iii.*(2nd|ii)\s*sem|3rd\s*year.*2nd\s*sem/i.test(q)) return "3-2";
+  if (/\b(5th|fifth)\s*sem/i.test(q) || /3[\s-]*1|iii.*(1st|i)\s*sem|3rd\s*year.*1st\s*sem/i.test(q)) return "3-1";
+  if (/\b(4th|fourth)\s*sem/i.test(q) || /2[\s-]*2|ii.*(2nd|ii)\s*sem|2nd\s*year.*2nd\s*sem/i.test(q)) return "2-2";
+  if (/\b(3rd|third)\s*sem/i.test(q) || /2[\s-]*1|ii.*(1st|i)\s*sem|2nd\s*year.*1st\s*sem/i.test(q)) return "2-1";
+  if (/4th\s*year|iv\s*b\.?tech/i.test(q)) return "4-1";
+  if (/3rd\s*year|iii\s*b\.?tech/i.test(q)) return "3-1";
+  if (/2nd\s*year|ii\s*b\.?tech/i.test(q)) return "2-1";
+  return "3-1"; // default: IT dept's current class = V Semester
+}
+
+function fullCalendarText(key){
+  const cal = CALENDAR[key];
+  let out = `📅 Academic Calendar — ${cal.label} (2026-27):\n`;
+  for (const k in cal){
+    if (k === "label") continue;
+    out += `\n${k}: ${cal[k]}`;
+  }
+  return out;
+}
+
+function answerCalendarQuery(q){
+  // Whole-college common events (holidays, fest, internships) — checked first
+  if (/dasara/i.test(q)) return `📢 Dasara Holidays: ${COMMON_EVENTS["Dasara Holidays"]}`;
+  if (/pongal/i.test(q)) return `📢 Pongal Holidays: ${COMMON_EVENTS["Pongal Holidays"]}`;
+  if (/bectagon|fest/i.test(q)) return `📢 BECTAGON 2027 (College Fest): ${COMMON_EVENTS["BECTAGON 2027 (College Fest)"]}`;
+  if (/internship/i.test(q)){
+    if (/2nd\s*year|ii\s*b\.?tech/i.test(q)) return `📢 2nd Year Internship Break: ${COMMON_EVENTS["2nd Year Internship Break"]}`;
+    if (/3rd\s*year|iii\s*b\.?tech/i.test(q)) return `📢 3rd Year Internship Break: ${COMMON_EVENTS["3rd Year Internship Break"]}`;
+    return `📢 Internship Breaks:\n\n3rd Year: ${COMMON_EVENTS["3rd Year Internship Break"]}\n2nd Year: ${COMMON_EVENTS["2nd Year Internship Break"]}`;
+  }
+
+  if (!/(exam|assignment|term|calendar|commence|class work|instruction day|prep(aration)? holiday|semester)/i.test(q)) return null;
+
+  const key = detectSemesterKey(q);
+  const cal = CALENDAR[key];
+
+  if (/semester end|final exam|semester exam/i.test(q)){
+    return `📢 ${cal.label}: Semester End Examinations are scheduled from ${cal["Semester End Examinations"] || "Not applicable / see Project Work Assessment dates"}.\n${cal["Preparation Holidays"] ? "Preparation Holidays: " + cal["Preparation Holidays"] + "\n" : ""}${cal["Last Instruction Day"] ? "Last Instruction Day: " + cal["Last Instruction Day"] : ""}`;
+  }
+  if (/first term/i.test(q)) return `📢 First Term Examinations (${cal.label}): ${cal["First Term Examinations"] || "Not applicable for this semester"}`;
+  if (/second term/i.test(q)) return `📢 Second Term Examinations (${cal.label}): ${cal["Second Term Examinations"] || "Not applicable for this semester"}`;
+  if (/first assignment/i.test(q)) return `📢 First Assignment Test (${cal.label}): ${cal["First Assignment Test"] || "Not applicable for this semester"}`;
+  if (/second assignment/i.test(q)) return `📢 Second Assignment Test (${cal.label}): ${cal["Second Assignment Test"] || "Not applicable for this semester"}`;
+  if (/commence|class work start|classes start/i.test(q)) return `📢 Commencement of Class Work (${cal.label}): ${cal["Commencement of Class Work"]}`;
+  if (/last instruction/i.test(q)) return `📢 Last Instruction Day (${cal.label}): ${cal["Last Instruction Day"] || "Not listed for this semester"}`;
+  if (/prep(aration)? holiday/i.test(q)) return `📢 Preparation Holidays (${cal.label}): ${cal["Preparation Holidays"] || "Not listed for this semester"}`;
+  if (/project work/i.test(q)) return `📢 Project Work (${cal.label}):\n\nPreliminary Assessment: ${cal["Project Work Preliminary Assessment"] || "N/A"}\nFinal Assessment: ${cal["Project Work Final Assessment"] || "N/A"}`;
+
+  // Generic exam / calendar request -> full block for the detected semester
+  return fullCalendarText(key);
+}
+
+/* =========================================================
+   USER NAME / GREETING STATE
+========================================================= */
+let userName = null;
+
+function isGreeting(q){
+  return /^\s*(hi|hii|hello|hey|hlo|helo)\b/i.test(q);
+}
+function isHowAreYou(q){
+  return /how\s*are\s*(u|you)|how\s*r\s*u|hw\s*r\s*u/i.test(q);
+}
+let isHowAreYou_prevContext = false; // set true right after bot says "I am fine..."
+
+function tryExtractName(q){
+  let m = q.match(/my name is\s+([a-zA-Z]+)/i) || q.match(/i am\s+([a-zA-Z]+)/i) || q.match(/i'm\s+([a-zA-Z]+)/i) || q.match(/this is\s+([a-zA-Z]+)/i);
+  if (m) return m[1];
+  // if we just asked for the name, treat the whole short reply as the name
+  if (awaitingName){
+    const cleaned = q.trim().split(/\s+/)[0];
+    if (cleaned && /^[a-zA-Z]+$/.test(cleaned)) return cleaned;
+  }
+  return null;
+}
+let awaitingName = false;
+
+/* =========================================================
+   MASTER QUERY ENGINE
+========================================================= */
+function findBestAnswer(rawQuery){
+  const q = normalize(rawQuery);
+  const original = rawQuery.trim();
+
+  // ---- Name capture flow ----
+  if (awaitingName){
+    const name = tryExtractName(original);
+    awaitingName = false;
+    if (name){
+      userName = name.charAt(0).toUpperCase() + name.slice(1);
+      return `Nice to meet you, ${userName}! 😊 Ask me anything about the V-Semester timetable, faculty, or academic calendar.`;
+    }
+  }
+
+  // ---- Greetings / small talk ----
+  if (isHowAreYou(q)){
+    isHowAreYou_prevContext = true;
+    const namePart = userName ? `, ${userName}` : "";
+    return `I am fine${namePart}, thank you for asking! 😊 How can I help you today — timetable, faculty, or exam dates?`;
+  }
+  if (isGreeting(q)){
+    isHowAreYou_prevContext = false;
+    if (!userName){
+      awaitingName = true;
+      return "Hi! 👋 I'm the IT Dept. Assistant. What's your name?";
+    }
+    return `Hi ${userName}! 👋 How can I help you today?`;
+  }
+  if (/^\s*(i'?m fine|fine|good|great|i am good|i am fine)\b/i.test(q) && isHowAreYou_prevContext){
+    isHowAreYou_prevContext = false;
+    const namePart = userName ? `, ${userName}` : "";
+    return `Glad to hear that${namePart}! 😊 What would you like to know?`;
+  }
+
+  const namePrefix = userName ? `${userName}, ` : "";
+
+  // HOD / Principal / Coordinator / Room
+  if (/\bhod\b|head of department/i.test(q)) return namePrefix + `HOD, Department of Information Technology: ${COLLEGE.hod}`;
+  if (/principal/i.test(q)) return namePrefix + `Principal, ${COLLEGE.name}: ${COLLEGE.principal}`;
+  if (/coordinator/i.test(q)){
+    const section = detectSection(q);
+    if (section && section !== "ALL") return namePrefix + `📌 Section Coordinator for Section ${section}: ${SECTION_META[section].coordinator}`;
+    let out = namePrefix + "📌 Section Coordinators:\n";
+    for (const s in SECTION_META) out += `\nSection ${s}: ${SECTION_META[s].coordinator}`;
+    return out;
+  }
+  if (/room\s*no|room number/i.test(q)){
+    const section = detectSection(q);
+    if (section && section !== "ALL") return namePrefix + `🏫 Room for Section ${section}: ${SECTION_META[section].room}`;
+    let out = namePrefix + "🏫 Room Numbers:\n";
+    for (const s in SECTION_META) out += `\nSection ${s}: ${SECTION_META[s].room}`;
+    return out;
+  }
+  if (/lunch/i.test(q)) return namePrefix + `🍽️ Lunch Break timing (all sections): ${LUNCH_SLOT}`;
+
+  // Calendar / Exam queries
+  const calAns = answerCalendarQuery(q);
+  if (calAns) return namePrefix + calAns.replace(/^📢 |^📅 /, m => m); // keep emoji, just ensure name prefix flows
+
+  // Day + Section + Period => exact slot
+  let day = detectDay(q);
+  const section = detectSection(q);
+  const period = detectPeriod(q);
+  let dateContext = ""; // prefix like "(31 Jul 2026 → Friday)\n\n" when day was resolved from a date/relative word
+
+  // Unified dispatcher: routes to single-section or ALL-sections answer
+  function resolveSlot(sec, d, p){
+    return sec === "ALL" ? answerSlotAllSections(d, p) : answerSlot(sec, d, p);
+  }
+  function resolveFullDay(sec, d){
+    if (sec === "ALL"){
+      return ["A","B","C"].map(s => answerFullDay(s, d)).join("\n\n");
+    }
+    return answerFullDay(sec, d);
+  }
+
+  // Relative day lookup: "today period", "tomorrow periods for C sec", "day after tomorrow timetable A"
+  if (!day){
+    const relInfo = resolveRelativeDay(q);
+    if (relInfo){
+      if (relInfo.isSunday){
+        return namePrefix + `📅 ${relInfo.dateStr} is a Sunday — no classes scheduled.`;
+      }
+      day = relInfo.weekday;
+      dateContext = `(${relInfo.dateStr} → ${day})\n\n`;
+    }
+  }
+
+  // Date-based lookup: "31st july periods for c sec", "august 26 for a sec"
+  if (!day){
+    const dateInfo = detectDateToDay(q);
+    if (dateInfo){
+      if (dateInfo.isSunday){
+        return namePrefix + `📅 ${dateInfo.dateStr} is a Sunday — no classes scheduled.`;
+      }
+      day = dateInfo.weekday;
+      dateContext = `(${dateInfo.dateStr} → ${day})\n\n`;
+    }
+  }
+
+  if (day && section && period){
+    return namePrefix + dateContext + resolveSlot(section, day, period);
+  }
+
+  // Day + Section + a clock time (no period number) -> resolve time to period
+  if (day && section && !period){
+    const looksLikeTime = /\b\d{1,2}(:\d{2})?\s*(am|pm)\b/i.test(q) || /\bat\s*\d{1,2}(:\d{2})?\b/i.test(q) || /\btime\b/i.test(q);
+    if (looksLikeTime){
+      const idx = detectTimeToPeriodIdx(q);
+      if (idx === -1){
+        return namePrefix + dateContext + `🍽️ That falls in the Lunch Break (${LUNCH_SLOT}) for ${section === "ALL" ? "all sections" : "Section " + section} on ${day}.`;
+      }
+      if (idx === -2){
+        return namePrefix + dateContext + `🌙 That time is outside college hours (9:00 AM - 4:30 PM). No classes are scheduled for ${section === "ALL" ? "any section" : "Section " + section} at that time on ${day}.`;
+      }
+      if (idx !== null){
+        return namePrefix + dateContext + resolveSlot(section, day, idx + 1);
+      }
+    }
+  }
+
+  if (day && section && !period){
+    return namePrefix + dateContext + resolveFullDay(section, day);
+  }
+
+  if (day && !section){
+    return namePrefix + dateContext + `Please also tell me the section (A, B, C, or "all sections") so I can show the ${day} timetable. Example: "${day} B section timetable".`;
+  }
+
+  // "who teaches X" / subject + section
+  const subjKey = detectSubjectKey(q);
+  if (subjKey && (/teach|faculty|who is|handles|handling/i.test(q) || section)){
+    if (section === "ALL"){
+      return namePrefix + answerFacultyForSubject(subjKey, null);
+    }
+    return namePrefix + answerFacultyForSubject(subjKey, section);
+  }
+
+  // Faculty-NAME reverse lookup: "who is Krishnaiah", "Ratna Babu subjects", "Dr Hanuman Kumar which section"
+  if (!subjKey){
+    const nameQuery = extractNameQuery(original);
+    if (nameQuery){
+      const matches = findFacultySchedule(nameQuery);
+      if (matches){
+        return namePrefix + formatFacultyMatches(matches);
+      }
+    }
+  }
+
+  if (section && !day && !subjKey){
+    if (section === "ALL"){
+      return namePrefix + `Please tell me the day too, e.g. "Saturday last period for all sections" or "Friday period 3 for A, B, C".`;
+    }
+    return namePrefix + `Section ${section} — Room ${SECTION_META[section].room}, Coordinator: ${SECTION_META[section].coordinator}. Ask me a specific day/period, e.g. "Friday section ${section} period 3", or a date like "31st July section ${section}".`;
+  }
+
+  return null;
+}
+
+/* =========================================================
+   LIVE CLOCK + CURRENT / NEXT PERIOD LOGIC
+========================================================= */
+// Period boundaries in minutes-since-midnight, matching PERIOD_TIMES order (P1..P8)
+const PERIOD_BOUNDS = [
+  [540,590],[590,640],[640,690],[690,740],   // P1-P4 : 9:00-12:20
+  [790,840],[840,890],[890,940],[940,990]    // P5-P8 : 1:10-4:30 (after lunch)
+];
+const LUNCH_BOUNDS = [740,790]; // 12:20-1:10
+
+function pad2(n){ return n<10 ? "0"+n : ""+n; }
+
+function updateLiveClock(){
+  const el = document.getElementById("liveClock");
+  if (!el) return;
+  const now = new Date();
+  el.textContent = pad2(now.getHours()) + ":" + pad2(now.getMinutes()) + ":" + pad2(now.getSeconds());
+  el.title = "Your device's local time: " + now.toLocaleDateString('en-IN', { weekday:'long', day:'2-digit', month:'short', year:'numeric' });
+}
+setInterval(updateLiveClock, 1000);
+updateLiveClock();
+
+function deviceTimeFooter(now){
+  const dateStr = now.toLocaleDateString('en-IN', { weekday:'long', day:'2-digit', month:'short', year:'numeric' });
+  const timeStr = pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+  return `\n\n🔎 Based on your device's clock: ${dateStr}, ${timeStr}. If this looks wrong, please check your phone/computer's date & time settings.`;
+}
+
+function getCurrentClassInfo(section){
+  const now = new Date();
+  const msg = computeCurrentClassInfo(section, now);
+  return msg + deviceTimeFooter(now);
+}
+
+function computeCurrentClassInfo(section, now){
+  const dayName = DAY_NAMES[now.getDay()];
+  const nowMin = now.getHours()*60 + now.getMinutes();
+
+  if (dayName === "Sunday"){
+    return `🕐 It's Sunday — no classes for Section ${section} today. Enjoy the day off!`;
+  }
+  const daySchedule = TIMETABLE[section][dayName];
+  if (!daySchedule){
+    return `🕐 No schedule found for ${dayName}, Section ${section}.`;
+  }
+
+  // Currently in lunch?
+  if (nowMin >= LUNCH_BOUNDS[0] && nowMin < LUNCH_BOUNDS[1]){
+    const next = daySchedule[4]; // P5 = index 4, first period after lunch
+    const nextInfo = SUBJECTS[next] || { full: next };
+    return `🍽️ It's Lunch Break right now (${LUNCH_SLOT}) for Section ${section}.\n\nNext up — P5 (${PERIOD_TIMES[4]}): ${nextInfo.full}${next!=="-" ? " — " + FACULTY[section][next] : ""}`;
+  }
+
+  for (let i=0;i<PERIOD_BOUNDS.length;i++){
+    const [start,end] = PERIOD_BOUNDS[i];
+    if (nowMin >= start && nowMin < end){
+      const subjKey = daySchedule[i];
+      const subj = SUBJECTS[subjKey] || { full: subjKey };
+      const nextKey = i < 7 ? daySchedule[i+1] : null;
+      const nextSubj = nextKey ? (SUBJECTS[nextKey] || { full: nextKey }) : null;
+      let out = `🕐 Right now (${dayName}, ${PERIOD_TIMES[i]}) — Section ${section}, Period ${i+1}:\n`;
+      out += subjKey === "-" ? "Free Period" : `${subj.full} — ${FACULTY[section][subjKey]}`;
+      if (nextSubj){
+        out += `\n\nNext: P${i+2} (${PERIOD_TIMES[i+1]}) — ${nextSubj.full}${nextKey!=="-" ? " — " + FACULTY[section][nextKey] : ""}`;
+      } else {
+        out += `\n\nThat's the last period for today.`;
+      }
+      return out;
+    }
+  }
+
+  if (nowMin < PERIOD_BOUNDS[0][0]){
+    const first = daySchedule[0];
+    const firstInfo = SUBJECTS[first] || { full: first };
+    return `🕐 Classes haven't started yet today for Section ${section}.\n\nFirst class — P1 (${PERIOD_TIMES[0]}): ${firstInfo.full}${first!=="-" ? " — " + FACULTY[section][first] : ""}`;
+  }
+  return `🕐 Classes are over for today (${dayName}) for Section ${section}. See you tomorrow!`;
+}
+
+function detectCurrentPeriodQuery(q){
+  return /current period|current class|right now|happening now|now class|what.?s (my|the) class|next class|now period/i.test(q);
+}
+
+/* =========================================================
+   VISUAL TIMETABLE GRID (HTML table)
+========================================================= */
+function generateGridHTML(section){
+  const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  let html = `<div style="font-weight:700;margin-bottom:6px;">📊 Weekly Timetable — Section ${section} (Room ${SECTION_META[section].room})</div>`;
+  html += `<table class="grid-table"><thead><tr><th>Period</th>`;
+  days.forEach(d => html += `<th>${d.slice(0,3)}</th>`);
+  html += `</tr></thead><tbody>`;
+
+  for (let i=0;i<8;i++){
+    html += `<tr><td class="period-label">P${i+1}<br>${PERIOD_TIMES[i]}</td>`;
+    days.forEach(d => {
+      const subjKey = TIMETABLE[section][d][i];
+      const subj = SUBJECTS[subjKey] || { full: subjKey };
+      const fac = subjKey !== "-" ? (FACULTY[section][subjKey] || "") : "";
+      if (subjKey === "-"){
+        html += `<td class="free-cell">—</td>`;
+      } else {
+        html += `<td>${subjKey}<span class="fac">${fac.split("/")[0].split("&")[0].trim()}</span></td>`;
+      }
+    });
+    html += `</tr>`;
+    if (i === 3){
+      html += `<tr><td class="period-label">Lunch</td>`;
+      days.forEach(()=> html += `<td class="lunch-row">12:20-1:10</td>`);
+      html += `</tr>`;
+    }
+  }
+  html += `</tbody></table>`;
+  return html;
+}
+
+function quickGrid(section){
+  appendMessage(`Show grid for Section ${section}`, "user");
+  showTyping();
+  setTimeout(() => {
+    removeTyping();
+    appendMessage(generateGridHTML(section), "bot", true);
+  }, 500);
+}
+
+function quickCurrentClass(){
+  ask_user_input_v0_shortcut();
+}
+function ask_user_input_v0_shortcut(){
+  // simple inline prompt via chat instead of a separate dialog
+  appendMessage("Current period — which section? (A/B/C)", "bot");
+  awaitingSectionForCurrent = true;
+}
+let awaitingSectionForCurrent = false;
+
+/* =========================================================
+   CLEAR CHAT / NO PERSISTENCE
+   NOTE: This app stores NOTHING between visits — no localStorage,
+   no sessionStorage, no cookies, no server. Everything (messages,
+   userName, awaitingName, etc.) lives only in page memory. Closing
+   the tab, refreshing, or navigating away already wipes it all.
+   This button just lets the student reset mid-session too.
+========================================================= */
+function clearChat(){
+  messagesEl.innerHTML = "";
+  userName = null;
+  awaitingName = false;
+  awaitingSectionForCurrent = false;
+  isHowAreYou_prevContext = false;
+  appendMessage("👋 Hi! I'm the IT Dept. Assistant, Bapatla Engineering College.\n\nI know the V-Semester timetable (Sections A, B & C) and the full Academic Calendar 2026-27. Adigi telusuko mawa!", "bot");
+}
+
+/* =========================================================
+   TEXT-TO-SPEECH (speak bot replies)
+========================================================= */
+let ttsEnabled = true;
+function toggleTTS(){
+  ttsEnabled = !ttsEnabled;
+  const btn = document.getElementById("ttsToggle");
+  btn.textContent = ttsEnabled ? "🔊" : "🔇";
+  btn.classList.toggle("off", !ttsEnabled);
+  if (!ttsEnabled) window.speechSynthesis.cancel();
+}
+function speak(text){
+  if (!ttsEnabled || !("speechSynthesis" in window)) return;
+  const clean = text.replace(/[📅📢🎓📌🏫🍽️🕐📊👋😊🔊🔇✅⚠️]/gu, "").replace(/\n+/g," ").trim();
+  if (!clean) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(clean.slice(0, 400));
+  utter.rate = 1;
+  utter.pitch = 1;
+  window.speechSynthesis.speak(utter);
+}
+
+/* =========================================================
+   VOICE INPUT (SpeechRecognition)
+========================================================= */
+let recognition = null;
+let isListening = false;
+const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SpeechRecognitionCtor){
+  recognition = new SpeechRecognitionCtor();
+  recognition.lang = "en-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    inputEl.value = transcript;
+    handleSend();
+  };
+  recognition.onend = () => {
+    isListening = false;
+    document.getElementById("micBtn").classList.remove("listening");
+  };
+  recognition.onerror = () => {
+    isListening = false;
+    document.getElementById("micBtn").classList.remove("listening");
+  };
+}
+
+function toggleMic(){
+  if (!recognition){
+    appendMessage("Voice input isn't supported in this browser. Try Chrome on desktop or Android.", "bot");
+    return;
+  }
+  if (isListening){
+    recognition.stop();
+    isListening = false;
+    document.getElementById("micBtn").classList.remove("listening");
+    return;
+  }
+  isListening = true;
+  document.getElementById("micBtn").classList.add("listening");
+  recognition.start();
+}
+
+/* =========================================================
+   CHAT UI LOGIC
+========================================================= */
+const messagesEl = document.getElementById("messages");
+const inputEl = document.getElementById("userInput");
+
+function appendMessage(content, sender, isHTML){
+  const div = document.createElement("div");
+  div.className = "msg " + sender;
+  if (isHTML){
+    div.innerHTML = content;
+  } else {
+    div.textContent = content;
+  }
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return div;
+}
+
+function showTyping(){
+  const div = document.createElement("div");
+  div.className = "msg bot";
+  div.id = "typingIndicator";
+  div.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+function removeTyping(){
+  const el = document.getElementById("typingIndicator");
+  if (el) el.remove();
+}
+
+function handleSend(){
+  const query = inputEl.value.trim();
+  if (!query) return;
+  appendMessage(query, "user");
+  inputEl.value = "";
+  showTyping();
+
+  setTimeout(() => {
+    removeTyping();
+
+    // Handle pending "which section?" follow-up for current-period quick action
+    if (awaitingSectionForCurrent){
+      awaitingSectionForCurrent = false;
+      const qn = normalize(query);
+      const sec = detectSection(qn) || (/^[abc]$/i.test(query.trim()) ? query.trim().toUpperCase() : null);
+      if (sec === "ALL"){
+        let combined = "🕐 Current period — All Sections:\n";
+        ["A","B","C"].forEach(s => { combined += `\n— Section ${s} —\n` + getCurrentClassInfo(s).split("\n\n🔎")[0] + "\n"; });
+        appendMessage(combined, "bot");
+        speak(combined);
+        return;
+      }
+      if (sec && ["A","B","C"].includes(sec)){
+        const info = getCurrentClassInfo(sec);
+        appendMessage(info, "bot");
+        speak(info);
+        return;
+      }
+    }
+
+    // Direct "current period" text query with section mentioned
+    if (detectCurrentPeriodQuery(normalize(query))){
+      const sec = detectSection(normalize(query));
+      if (sec === "ALL"){
+        let combined = "🕐 Current period — All Sections:\n";
+        ["A","B","C"].forEach(s => { combined += `\n— Section ${s} —\n` + getCurrentClassInfo(s).split("\n\n🔎")[0] + "\n"; });
+        appendMessage(combined, "bot");
+        speak(combined);
+        return;
+      }
+      if (sec){
+        const info = getCurrentClassInfo(sec);
+        appendMessage(info, "bot");
+        speak(info);
+        return;
+      } else {
+        appendMessage("Which section — A, B, C, or all?", "bot");
+        awaitingSectionForCurrent = true;
+        return;
+      }
+    }
+
+    // Grid/table request via text
+    const qn = normalize(query);
+    if (/grid|table view|weekly timetable|full week|entire timetable/i.test(qn)){
+      const sec = detectSection(qn);
+      if (sec === "ALL"){
+        ["A","B","C"].forEach(s => appendMessage(generateGridHTML(s), "bot", true));
+        return;
+      }
+      if (sec){
+        appendMessage(generateGridHTML(sec), "bot", true);
+        return;
+      } else {
+        appendMessage("Which section's grid would you like — A, B, C, or all?", "bot");
+        return;
+      }
+    }
+
+    const result = findBestAnswer(query);
+    if (result){
+      appendMessage(result, "bot");
+      speak(result);
+    } else {
+      const fallback = "I couldn't find that in the V-Semester timetable or academic calendar. Try specifying Day + Section + Period, e.g. \"Friday B section 3rd period\", or ask about exams, HOD, coordinators, or a subject's faculty.";
+      appendMessage(fallback, "bot");
+    }
+  }, 600 + Math.random()*400);
+}
+
+inputEl.addEventListener("keypress", e => { if (e.key === "Enter") handleSend(); });
+document.querySelectorAll("#suggestList button").forEach(btn=>{
+  btn.addEventListener("click", () => { inputEl.value = btn.textContent; handleSend(); });
+});
+</script>
+</body>
+</html>
